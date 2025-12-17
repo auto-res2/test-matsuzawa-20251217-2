@@ -163,21 +163,27 @@ def generate_illconditioned_data(cfg: DictConfig) -> Tuple[torch.Tensor, torch.T
     assert kappa >= 1, f"Condition number must be >= 1: {kappa}"
     assert 0 <= noise_level <= 1.0, f"Noise level should be in [0, 1]: {noise_level}"
     
-    # Generate eigenvalues with condition number κ
-    eigenvalues = np.array([kappa**(-(i-1)/(d-1)) for i in range(1, d+1)], dtype=np.float32)
-    
+    # Generate eigenvalues with condition number κ (use min(n,d) for the matrix)
+    rank = min(n, d)
+    eigenvalues = np.array([kappa**(-(i-1)/(rank-1)) for i in range(1, rank+1)], dtype=np.float32)
+
     # Generate orthogonal matrices via QR decomposition
-    Q_temp = np.random.randn(d, d)
-    Q, _ = np.linalg.qr(Q_temp)
-    
+    # U is n x n (left singular vectors)
+    U_temp = np.random.randn(n, n)
+    U, _ = np.linalg.qr(U_temp)
+
+    # V is d x d (right singular vectors)
     V_temp = np.random.randn(d, d)
     V, _ = np.linalg.qr(V_temp)
-    
-    # Construct ill-conditioned matrix: A = Q Σ V^T
-    Sigma = np.diag(eigenvalues)
-    A = Q @ Sigma @ V.T
+
+    # Construct ill-conditioned matrix: A = U Σ V^T where Σ is n x d
+    # Create the rectangular diagonal matrix Σ
+    Sigma = np.zeros((n, d), dtype=np.float32)
+    Sigma[:rank, :rank] = np.diag(eigenvalues)
+
+    A = U @ Sigma @ V.T
     A = A.astype(np.float32)
-    
+
     # Verify condition number with tolerance assertion
     actual_kappa = np.linalg.cond(A)
     tolerance = 0.1 * kappa
@@ -186,7 +192,7 @@ def generate_illconditioned_data(cfg: DictConfig) -> Tuple[torch.Tensor, torch.T
     assert actual_kappa < kappa + tolerance, \
         f"Matrix condition number too large: {actual_kappa:.2e} vs target {kappa:.2e}"
     print(f"✓ Matrix condition number: {actual_kappa:.2e} (target: {kappa:.2e})")
-    
+
     # Generate problem: minimize ||Ax - b||²
     x_true = np.random.randn(d).astype(np.float32) * 0.1
     b = A @ x_true + np.random.randn(n).astype(np.float32) * noise_level
@@ -196,7 +202,7 @@ def generate_illconditioned_data(cfg: DictConfig) -> Tuple[torch.Tensor, torch.T
     b_tensor = torch.from_numpy(b.reshape(-1, 1)).float().squeeze()
     
     # POST-GENERATION ASSERTIONS
-    assert A_tensor.shape == (d, d), f"Matrix shape mismatch: {A_tensor.shape}"
+    assert A_tensor.shape == (n, d), f"Matrix shape mismatch: {A_tensor.shape}"
     assert b_tensor.shape == (n,), f"Vector shape mismatch: {b_tensor.shape}"
     assert not torch.isnan(A_tensor).any(), "NaN in matrix A"
     assert not torch.isnan(b_tensor).any(), "NaN in vector b"
