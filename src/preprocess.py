@@ -9,22 +9,24 @@ from typing import Tuple
 def get_dataset(cfg: DictConfig) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """
     Load and preprocess dataset based on configuration.
-    
+
     Args:
         cfg: Hydra configuration with dataset specification
-        
+
     Returns:
         Tuple of (X_train, y_train, X_test, y_test) as torch tensors
     """
-    
+
     dataset_name = cfg.dataset.name if hasattr(cfg.dataset, 'name') else "synthetic"
-    
+
     if "power-law" in dataset_name.lower():
         return generate_power_law_spectrum_data(cfg)
     elif "mnist" in dataset_name.lower():
         return generate_mnist_binary_data(cfg)
     elif "ill-conditioned" in dataset_name.lower():
         return generate_illconditioned_data(cfg)
+    elif "federated" in dataset_name.lower() or "cifar" in dataset_name.lower():
+        return generate_federated_data(cfg)
     else:
         return generate_power_law_spectrum_data(cfg)
 
@@ -201,3 +203,70 @@ def generate_illconditioned_data(cfg: DictConfig) -> Tuple[torch.Tensor, torch.T
     
     # For least squares, use same data for validation (problem-specific)
     return A_tensor, b_tensor, A_tensor, b_tensor
+
+
+def generate_federated_data(cfg: DictConfig) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Generate synthetic federated learning data simulating distributed clients."""
+
+    seed = cfg.training.seed if hasattr(cfg.training, 'seed') else 42
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+    # Extract federated parameters
+    n_clients = cfg.dataset.n_clients if hasattr(cfg.dataset, 'n_clients') else 10
+    n_local_samples = cfg.dataset.n_local_samples_per_client if hasattr(cfg.dataset, 'n_local_samples_per_client') else 5000
+    n_test = cfg.dataset.n_test_samples if hasattr(cfg.dataset, 'n_test_samples') else 10000
+    d = cfg.model.input_dimension if hasattr(cfg.model, 'input_dimension') else 5000
+    non_iid = cfg.dataset.non_iid if hasattr(cfg.dataset, 'non_iid') else False
+    data_heterogeneity = cfg.dataset.data_heterogeneity_factor if hasattr(cfg.dataset, 'data_heterogeneity_factor') else 0.3
+
+    # POST-INIT ASSERTIONS
+    assert n_clients > 0, f"Number of clients must be positive: {n_clients}"
+    assert n_local_samples > 0, f"Local samples per client must be positive: {n_local_samples}"
+    assert n_test > 0, f"Number of test samples must be positive: {n_test}"
+    assert d > 0, f"Feature dimension must be positive: {d}"
+    assert 0 <= data_heterogeneity <= 1.0, f"Data heterogeneity should be in [0, 1]: {data_heterogeneity}"
+
+    # Generate global true weight vector
+    w_true = torch.randn(d, dtype=torch.float32) * 0.1
+
+    # Generate data for all clients
+    X_train_list = []
+    y_train_list = []
+
+    for client_id in range(n_clients):
+        # Generate features with potential heterogeneity
+        if non_iid:
+            # Non-IID: Each client has slightly different data distribution
+            client_shift = torch.randn(d, dtype=torch.float32) * data_heterogeneity
+            X_client = torch.randn(n_local_samples, d, dtype=torch.float32) + client_shift
+        else:
+            # IID: All clients have same distribution
+            X_client = torch.randn(n_local_samples, d, dtype=torch.float32)
+
+        # Generate labels based on global model with noise
+        noise_client = torch.randn(n_local_samples, dtype=torch.float32) * 0.5
+        y_client = (X_client @ w_true + noise_client > 0).float()
+
+        X_train_list.append(X_client)
+        y_train_list.append(y_client)
+
+    # Concatenate all client data into single training set
+    X_train = torch.cat(X_train_list, dim=0)
+    y_train = torch.cat(y_train_list, dim=0)
+
+    # Generate held-out test data (centralized)
+    X_test = torch.randn(n_test, d, dtype=torch.float32)
+    noise_test = torch.randn(n_test, dtype=torch.float32) * 0.5
+    y_test = (X_test @ w_true + noise_test > 0).float()
+
+    # POST-GENERATION ASSERTIONS
+    expected_train_size = n_clients * n_local_samples
+    assert X_train.shape == (expected_train_size, d), f"Train features shape mismatch: {X_train.shape}"
+    assert y_train.shape == (expected_train_size,), f"Train labels shape mismatch: {y_train.shape}"
+    assert X_test.shape == (n_test, d), f"Test features shape mismatch: {X_test.shape}"
+    assert y_test.shape == (n_test,), f"Test labels shape mismatch: {y_test.shape}"
+    assert y_train.min() >= 0 and y_train.max() <= 1, "Train labels should be in [0, 1]"
+    assert y_test.min() >= 0 and y_test.max() <= 1, "Test labels should be in [0, 1]"
+
+    return X_train, y_train, X_test, y_test

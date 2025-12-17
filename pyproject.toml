@@ -30,3 +30,6 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/example/sdslr-experiments"
 Repository = "https://github.com/example/sdslr-experiments"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

@@ -8,28 +8,28 @@ from omegaconf import DictConfig
 def get_model(cfg: DictConfig) -> nn.Module:
     """
     Factory function to create model based on configuration.
-    
+
     Args:
         cfg: Hydra configuration with model specification
-        
+
     Returns:
         PyTorch model instance
     """
-    
+
     model_name = cfg.model.name if hasattr(cfg.model, 'name') else "synthetic-linear-regression"
-    
+
     if "linear-regression" in model_name.lower():
         dim = cfg.model.dimension if hasattr(cfg.model, 'dimension') else 1000
         return LinearRegressionModel(dim)
-    
-    elif "classification" in model_name.lower():
+
+    elif "logistic-regression" in model_name.lower() or "classification" in model_name.lower():
         input_dim = cfg.model.input_dimension if hasattr(cfg.model, 'input_dimension') else 784
         return LogisticRegressionModel(input_dim)
-    
+
     elif "least-squares" in model_name.lower():
         dim = cfg.model.dimension if hasattr(cfg.model, 'dimension') else 2000
         return LinearRegressionModel(dim)
-    
+
     else:
         # Default: linear regression
         dim = cfg.model.dimension if hasattr(cfg.model, 'dimension') else 1000
