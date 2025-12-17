@@ -87,6 +87,7 @@ evaluation:
   statistical_test: paired-t-test
   significance_level: 0.05
   target_accuracy_threshold: null
+  target_relative_error: null
 
 experiment_metadata:
   experiment_id: null
