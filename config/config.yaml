@@ -27,6 +27,7 @@ model:
   spectrum_type: power-law
   distributed: false
   condition_number: 1000
+  feature_preprocessing: null
 
 dataset:
   name: null
@@ -45,6 +46,10 @@ dataset:
   federated: false
   non_iid: false
   data_heterogeneity_factor: 0.3
+  binary_classes: null
+  image_size: null
+  n_channels: null
+  total_features: null
 
 training:
   learning_rate: 0.01
@@ -81,9 +86,13 @@ evaluation:
   confidence_interval: 0.9
   statistical_test: paired-t-test
   significance_level: 0.05
+  target_accuracy_threshold: null
 
 experiment_metadata:
   experiment_id: null
   task_type: null
   runner: null
   baseline: false
+  expected_accuracy_gain: null
+  expected_convergence_iterations_to_85_accuracy: null
+  expected_communication_rounds_speedup: null
