@@ -22,16 +22,22 @@ def main(cfg: DictConfig) -> None:
         cfg: Hydra configuration loaded from config/config.yaml and CLI overrides
     """
     
+    # Handle run parameter - can be either a string or a config object
+    if isinstance(cfg.run, str):
+        run_id = cfg.run
+    else:
+        run_id = cfg.run.run_id
+
     print(f"\n{'='*70}")
     print(f"SDSLR Experiment Orchestrator")
     print(f"{'='*70}")
-    print(f"Run ID: {cfg.run.run_id}")
+    print(f"Run ID: {run_id}")
     print(f"Mode: {cfg.mode}")
     print(f"Results Directory: {cfg.results_dir}")
     print(f"{'='*70}\n")
-    
+
     # Validate required parameters
-    if cfg.run.run_id is None:
+    if run_id is None:
         raise ValueError("ERROR: run parameter is required. Usage: python -m src.main run={run_id} results_dir={path} mode={mode}")
     
     if cfg.mode is None:
@@ -41,7 +47,7 @@ def main(cfg: DictConfig) -> None:
         raise ValueError(f"ERROR: mode must be 'trial' or 'full', got: {cfg.mode}")
     
     # Load run-specific config from config/runs/{run_id}.yaml if it exists
-    run_config_path = Path("config/runs") / f"{cfg.run.run_id}.yaml"
+    run_config_path = Path("config/runs") / f"{run_id}.yaml"
     if run_config_path.exists():
         print(f"Loading run-specific config from: {run_config_path}")
         run_config = OmegaConf.load(run_config_path)
@@ -61,7 +67,7 @@ def main(cfg: DictConfig) -> None:
         "-u",
         "-m",
         "src.train",
-        f"run.run_id={cfg.run.run_id}",
+        f"run.run_id={run_id}",
         f"results_dir={cfg.results_dir}",
         f"mode={cfg.mode}",
     ]
@@ -76,8 +82,8 @@ def main(cfg: DictConfig) -> None:
     if result.returncode != 0:
         print(f"\nERROR: train.py exited with code {result.returncode}")
         sys.exit(result.returncode)
-    
-    print(f"\nTraining completed successfully for run: {cfg.run.run_id}")
+
+    print(f"\nTraining completed successfully for run: {run_id}")
 
 
 if __name__ == "__main__":
