@@ -17,7 +17,7 @@ def get_dataset(cfg: DictConfig) -> Tuple[torch.Tensor, torch.Tensor, torch.Tens
         Tuple of (X_train, y_train, X_test, y_test) as torch tensors
     """
 
-    dataset_name = cfg.dataset.name if hasattr(cfg.dataset, 'name') else "synthetic"
+    dataset_name = cfg.dataset.name if (hasattr(cfg.dataset, 'name') and cfg.dataset.name is not None) else "synthetic"
 
     if "power-law" in dataset_name.lower():
         return generate_power_law_spectrum_data(cfg)

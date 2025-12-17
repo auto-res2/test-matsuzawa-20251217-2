@@ -557,7 +557,18 @@ def main(cfg: DictConfig) -> None:
     print(f"Run ID: {cfg.run.run_id}")
     print(f"Mode: {cfg.mode}")
     print(f"{'='*70}\n")
-    
+
+    # Load run-specific config from config/runs/{run_id}.yaml if it exists
+    run_config_path = Path(f"config/runs/{cfg.run.run_id}.yaml")
+    if run_config_path.exists():
+        print(f"Loading run-specific config from: {run_config_path}")
+        run_config = OmegaConf.load(run_config_path)
+        cfg = OmegaConf.merge(cfg, run_config)
+        print(f"✓ Run config merged with base config\n")
+    else:
+        print(f"Note: Run-specific config not found at {run_config_path}")
+        print(f"Using base config with CLI overrides\n")
+
     # Apply mode-based configuration
     if cfg.mode == "trial":
         cfg.wandb.mode = "disabled"
