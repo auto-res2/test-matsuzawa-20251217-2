@@ -39,6 +39,8 @@ dataset:
   n_local_samples_per_client: 5000
   total_training_samples: 50000
   spectrum_variants: []
+  condition_numbers: []
+  matrix_type: null
   noise_level: 0.01
   streaming_mode: true
   single_pass: true
@@ -97,3 +99,6 @@ experiment_metadata:
   expected_accuracy_gain: null
   expected_convergence_iterations_to_85_accuracy: null
   expected_communication_rounds_speedup: null
+  expected_residual_ratio: null
+  expected_iterations_to_1e4_error: null
+  expected_improvement_percent: null
