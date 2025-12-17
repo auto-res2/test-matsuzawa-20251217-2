@@ -526,3 +526,16 @@ Training Summary
 Training completed successfully for run: proposed-sdslr-mnist-binary-classification
 === [TRIAL RUN] PASSED for proposed-sdslr-mnist-binary-classification at Wed Dec 17 07:59:18 UTC 2025 ===
 
+=== [UV SYNC] Start at Wed Dec 17 07:59:45 UTC 2025 ===
+=== [UV SYNC] Finished successfully at Wed Dec 17 08:00:18 UTC 2025 ===
+=== [TRIAL RUN] Start for proposed-sdslr-synthetic-streaming-lr at Wed Dec 17 08:00:18 UTC 2025 ===
+
+======================================================================
+SDSLR Experiment Orchestrator
+======================================================================
+Run ID: proposed-sdslr-synthetic-streaming-lr
+Mode: trial
+Results Directory: .research/results
+======================================================================
+
+Loading run-specific config from: config/runs/proposed-sdslr-synthetic-streaming-lr.yaml

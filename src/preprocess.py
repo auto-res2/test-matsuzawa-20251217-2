@@ -153,7 +153,7 @@ def generate_illconditioned_data(cfg: DictConfig) -> Tuple[torch.Tensor, torch.T
     torch.manual_seed(seed)
     
     d = cfg.model.dimension if hasattr(cfg.model, 'dimension') else 2000
-    n = cfg.model.n_samples if hasattr(cfg.model, 'n_samples') else 500
+    n = cfg.dataset.n_samples if hasattr(cfg.dataset, 'n_samples') else 500
     kappa = cfg.model.condition_number if hasattr(cfg.model, 'condition_number') else 1000
     noise_level = cfg.dataset.noise_level if hasattr(cfg.dataset, 'noise_level') else 0.01
     

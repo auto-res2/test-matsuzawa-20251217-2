@@ -102,3 +102,5 @@ experiment_metadata:
   expected_residual_ratio: null
   expected_iterations_to_1e4_error: null
   expected_improvement_percent: null
+  expected_convergence_speedup: null
+  expected_improvement_at_κ_1000: null
