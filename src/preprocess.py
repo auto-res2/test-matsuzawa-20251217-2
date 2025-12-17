@@ -174,7 +174,7 @@ def generate_illconditioned_data(cfg: DictConfig) -> Tuple[torch.Tensor, torch.T
     V, _ = np.linalg.qr(V_temp)
     
     # Construct ill-conditioned matrix: A = Q Σ V^T
-    Sigma = np.diag(np.sqrt(eigenvalues))
+    Sigma = np.diag(eigenvalues)
     A = Q @ Sigma @ V.T
     A = A.astype(np.float32)
     
