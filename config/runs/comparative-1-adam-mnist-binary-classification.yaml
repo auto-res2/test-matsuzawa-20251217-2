@@ -1,0 +1,73 @@
+run_id: comparative-1-adam-mnist-binary-classification
+method: Standard-Adam
+description: Baseline Adam optimizer on MNIST binary classification (no spectrum awareness)
+
+model:
+  name: logistic-regression
+  input_dimension: 784
+  problem_type: binary-classification
+  feature_preprocessing: normalized
+
+dataset:
+  name: mnist-binary-streaming
+  binary_classes: [0, 1]
+  n_train_samples: 1000
+  n_test_samples: 500
+  image_size: 28
+  n_channels: 1
+  total_features: 784
+  streaming_mode: true
+  single_pass: true
+  validation_split: 0.1
+
+training:
+  learning_rate: 0.01
+  batch_size: 1
+  epochs: 30
+  optimizer: Adam
+  warmup_steps: 100
+  weight_decay: null
+  gradient_clip: null
+  scheduler: null
+  seed: 42
+  optimizer_config:
+    beta1: 0.9
+    beta2: 0.999
+    epsilon: 1e-8
+  loss_function: binary-cross-entropy
+
+optuna:
+  enabled: true
+  n_trials: 15
+  search_spaces:
+    - param_name: learning_rate
+      distribution_type: loguniform
+      low: 0.0001
+      high: 0.1
+    - param_name: beta1
+      distribution_type: uniform
+      low: 0.8
+      high: 0.99
+    - param_name: beta2
+      distribution_type: uniform
+      low: 0.99
+      high: 0.999
+
+evaluation:
+  primary_metric: accuracy_gain
+  secondary_metrics:
+    - final_loss
+    - test_accuracy
+    - convergence_speed_ratio
+    - learning_rate_variance
+  n_runs: 30
+  validation_split: 0.1
+  confidence_interval: 0.9
+  statistical_test: paired-t-test
+  significance_level: 0.05
+
+experiment_metadata:
+  experiment_id: experiment-2-mnist-binary
+  task_type: streaming-classification
+  runner: gpu-runner
+  baseline: true

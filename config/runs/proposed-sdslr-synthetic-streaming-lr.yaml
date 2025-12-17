@@ -1,0 +1,76 @@
+run_id: proposed-sdslr-synthetic-streaming-lr
+method: Spectrum-Dependent Streaming Adaptive Learning Rate (SDSLR)
+description: Core streaming optimization benchmark with synthetic ill-conditioned linear regression
+
+model:
+  name: synthetic-linear-regression
+  dimension: 1000
+  problem_type: streaming-linear-regression
+  spectrum_type: power-law
+
+dataset:
+  name: synthetic-power-law-spectrum
+  n_samples: 1000
+  n_features: 1000
+  n_test_samples: 200
+  spectrum_variants:
+    - alpha: 0.5
+    - alpha: 1.0
+    - alpha: 1.5
+    - alpha: 2.0
+  noise_level: 0.01
+  streaming_mode: true
+  single_pass: true
+
+training:
+  learning_rate: 0.01
+  batch_size: 1
+  epochs: 30
+  optimizer: SDSLR
+  warmup_steps: 100
+  weight_decay: null
+  gradient_clip: null
+  scheduler: null
+  seed: 42
+  optimizer_config:
+    beta1: 0.9
+    beta2: 0.999
+    lambda_spectrum: 0.3
+    epsilon: 1e-8
+    quartic_moment_coefficient: 0.999
+
+optuna:
+  enabled: true
+  n_trials: 15
+  search_spaces:
+    - param_name: lambda_spectrum
+      distribution_type: uniform
+      low: 0.0
+      high: 0.5
+    - param_name: warmup_steps
+      distribution_type: int
+      low: 10.0
+      high: 200.0
+    - param_name: learning_rate
+      distribution_type: loguniform
+      low: 0.0001
+      high: 0.1
+
+evaluation:
+  primary_metric: convergence_speed_ratio
+  secondary_metrics:
+    - final_loss
+    - learning_rate_variance
+    - wall_clock_time_per_iteration
+  n_runs: 30
+  validation_split: 0.1
+  confidence_interval: 0.9
+  statistical_test: paired-t-test
+  significance_level: 0.05
+
+experiment_metadata:
+  experiment_id: experiment-1-synthetic-streaming
+  task_type: streaming-optimization
+  runner: gpu-runner
+  expected_convergence_speedup: 1.8-2.2x
+  expected_improvement_at_κ_1000: 2.5-3.0x

@@ -1,0 +1,76 @@
+run_id: proposed-sdslr-mnist-binary-classification
+method: Spectrum-Dependent Streaming Adaptive Learning Rate (SDSLR)
+description: Streaming binary classification on MNIST (0 vs 1) with single-pass training
+
+model:
+  name: logistic-regression
+  input_dimension: 784
+  problem_type: binary-classification
+  feature_preprocessing: normalized
+
+dataset:
+  name: mnist-binary-streaming
+  binary_classes: [0, 1]
+  n_train_samples: 1000
+  n_test_samples: 500
+  image_size: 28
+  n_channels: 1
+  total_features: 784
+  streaming_mode: true
+  single_pass: true
+  validation_split: 0.1
+
+training:
+  learning_rate: 0.01
+  batch_size: 1
+  epochs: 30
+  optimizer: SDSLR
+  warmup_steps: 100
+  weight_decay: null
+  gradient_clip: null
+  scheduler: null
+  seed: 42
+  optimizer_config:
+    beta1: 0.9
+    beta2: 0.999
+    lambda_spectrum: 0.3
+    epsilon: 1e-8
+    quartic_moment_coefficient: 0.999
+  loss_function: binary-cross-entropy
+
+optuna:
+  enabled: true
+  n_trials: 15
+  search_spaces:
+    - param_name: lambda_spectrum
+      distribution_type: uniform
+      low: 0.0
+      high: 0.5
+    - param_name: warmup_steps
+      distribution_type: int
+      low: 10.0
+      high: 200.0
+    - param_name: learning_rate
+      distribution_type: loguniform
+      low: 0.0001
+      high: 0.1
+
+evaluation:
+  primary_metric: accuracy_gain
+  secondary_metrics:
+    - final_loss
+    - test_accuracy
+    - convergence_speed_ratio
+    - learning_rate_variance
+  n_runs: 30
+  validation_split: 0.1
+  confidence_interval: 0.9
+  statistical_test: paired-t-test
+  significance_level: 0.05
+
+experiment_metadata:
+  experiment_id: experiment-2-mnist-binary
+  task_type: streaming-classification
+  runner: gpu-runner
+  expected_accuracy_gain: 0.02-0.04
+  expected_convergence_iterations_to_85_accuracy: 300-400

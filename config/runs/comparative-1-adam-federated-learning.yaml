@@ -1,0 +1,79 @@
+run_id: comparative-1-adam-federated-learning
+method: Standard-Adam
+description: Baseline Adam optimizer on federated learning simulation (no spectrum awareness)
+
+model:
+  name: logistic-regression-distributed
+  input_dimension: 5000
+  problem_type: binary-classification
+  distributed: true
+
+dataset:
+  name: cifar-5m-federated
+  binary_classes: ['plane', 'car']
+  n_clients: 10
+  n_local_samples_per_client: 5000
+  total_training_samples: 50000
+  n_test_samples: 10000
+  n_features: 5000
+  streaming_mode: true
+  federated: true
+  non_iid: true
+  data_heterogeneity_factor: 0.3
+
+training:
+  learning_rate: 0.01
+  batch_size: 1
+  epochs: 30
+  optimizer: Adam
+  warmup_steps: 100
+  weight_decay: null
+  gradient_clip: null
+  scheduler: null
+  seed: 42
+  optimizer_config:
+    beta1: 0.9
+    beta2: 0.999
+    epsilon: 1e-8
+  loss_function: binary-cross-entropy
+  federated_config:
+    aggregation_rule: fedavg
+    local_epochs_per_round: 1
+    communication_rounds: 50
+
+optuna:
+  enabled: true
+  n_trials: 15
+  search_spaces:
+    - param_name: learning_rate
+      distribution_type: loguniform
+      low: 0.0001
+      high: 0.1
+    - param_name: beta1
+      distribution_type: uniform
+      low: 0.8
+      high: 0.99
+    - param_name: beta2
+      distribution_type: uniform
+      low: 0.99
+      high: 0.999
+
+evaluation:
+  primary_metric: communication_rounds_to_target_accuracy
+  secondary_metrics:
+    - final_test_accuracy
+    - convergence_speed_ratio
+    - wall_clock_time_per_round
+    - learning_rate_variance
+  n_runs: 30
+  validation_split: 0.1
+  confidence_interval: 0.9
+  statistical_test: paired-t-test
+  significance_level: 0.05
+  target_accuracy_threshold: 0.9
+
+experiment_metadata:
+  experiment_id: experiment-4-federated
+  task_type: federated-learning
+  runner: gpu-runner
+  baseline: true

@@ -1,0 +1,77 @@
+run_id: proposed-sdslr-illconditioned-stress-test
+method: Spectrum-Dependent Streaming Adaptive Learning Rate (SDSLR)
+description: Extreme conditioning stress test for least squares with κ=1000
+
+model:
+  name: ill-conditioned-least-squares
+  dimension: 2000
+  n_samples: 500
+  problem_type: least-squares
+  condition_number: 1000
+
+dataset:
+  name: synthetic-ill-conditioned-least-squares
+  n_features: 2000
+  n_samples: 500
+  condition_numbers: [100, 1000, 10000]
+  noise_level: 0.01
+  streaming_mode: true
+  single_pass: true
+  matrix_type: power-law-eigenvalue
+
+training:
+  learning_rate: 0.01
+  batch_size: 1
+  epochs: 30
+  optimizer: SDSLR
+  warmup_steps: 100
+  weight_decay: null
+  gradient_clip: null
+  scheduler: null
+  seed: 42
+  optimizer_config:
+    beta1: 0.9
+    beta2: 0.999
+    lambda_spectrum: 0.3
+    epsilon: 1e-8
+    quartic_moment_coefficient: 0.999
+  loss_function: mse
+
+optuna:
+  enabled: true
+  n_trials: 15
+  search_spaces:
+    - param_name: lambda_spectrum
+      distribution_type: uniform
+      low: 0.0
+      high: 0.5
+    - param_name: warmup_steps
+      distribution_type: int
+      low: 10.0
+      high: 200.0
+    - param_name: learning_rate
+      distribution_type: loguniform
+      low: 0.0001
+      high: 0.1
+
+evaluation:
+  primary_metric: residual_ratio
+  secondary_metrics:
+    - final_residual_normalized
+    - iterations_to_target_error
+    - convergence_speed_ratio
+    - learning_rate_variance
+  n_runs: 30
+  validation_split: 0.1
+  confidence_interval: 0.9
+  statistical_test: paired-t-test
+  significance_level: 0.05
+  target_relative_error: 1e-4
+
+experiment_metadata:
+  experiment_id: experiment-3-illconditioned
+  task_type: stress-test
+  runner: gpu-runner
+  expected_residual_ratio: 0.4-0.6
+  expected_iterations_to_1e4_error: 250-350
+  expected_improvement_percent: 40-60

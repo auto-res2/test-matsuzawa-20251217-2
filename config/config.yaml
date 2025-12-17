@@ -1,0 +1,79 @@
+defaults:
+  - _self_
+
+wandb:
+  entity: gengaru617-personal
+  project: 2025-11-19
+  mode: online
+
+run:
+  run_id: null
+
+mode: null
+
+results_dir: ./results
+
+# Full schema with defaults for all components
+model:
+  name: null
+  dimension: 1000
+  input_dimension: 784
+  n_samples: 500
+  problem_type: null
+  spectrum_type: power-law
+  distributed: false
+  condition_number: 1000
+
+dataset:
+  name: null
+  n_samples: 1000
+  n_features: 1000
+  n_test_samples: 200
+  n_train_samples: 1000
+  n_clients: 10
+  n_local_samples_per_client: 5000
+  total_training_samples: 50000
+  spectrum_variants: []
+  noise_level: 0.01
+  streaming_mode: true
+  single_pass: true
+  validation_split: 0.1
+  federated: false
+  non_iid: false
+  data_heterogeneity_factor: 0.3
+
+training:
+  learning_rate: 0.01
+  batch_size: 1
+  epochs: 30
+  optimizer: SDSLR
+  warmup_steps: 100
+  weight_decay: null
+  gradient_clip: null
+  scheduler: null
+  seed: 42
+  optimizer_config:
+    beta1: 0.9
+    beta2: 0.999
+    lambda_spectrum: 0.3
+    epsilon: 1e-8
+    quartic_moment_coefficient: 0.999
+  loss_function: mse
+  federated_config:
+    aggregation_rule: fedavg
+    local_epochs_per_round: 1
+    communication_rounds: 50
+
+optuna:
+  enabled: true
+  n_trials: 0
+  search_spaces: []
+
+evaluation:
+  primary_metric: convergence_speed_ratio
+  secondary_metrics: []
+  n_runs: 30
+  validation_split: 0.1
+  confidence_interval: 0.9
+  statistical_test: paired-t-test
+  significance_level: 0.05
