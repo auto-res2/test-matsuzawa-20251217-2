@@ -1,4 +1,6 @@
-run_id: proposed-sdslr-illconditioned-stress-test
+run:
+  run_id: proposed-sdslr-illconditioned-stress-test
+
 method: Spectrum-Dependent Streaming Adaptive Learning Rate (SDSLR)
 description: Extreme conditioning stress test for least squares with κ=1000
 

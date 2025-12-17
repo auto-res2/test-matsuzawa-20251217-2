@@ -1,4 +1,6 @@
-run_id: comparative-1-adam-synthetic-streaming-lr
+run:
+  run_id: comparative-1-adam-synthetic-streaming-lr
+
 method: Standard-Adam
 description: Baseline Adam optimizer on synthetic ill-conditioned linear regression (no spectrum awareness)
 

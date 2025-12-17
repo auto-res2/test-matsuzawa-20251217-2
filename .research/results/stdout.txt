@@ -221,3 +221,16 @@ Training Summary
 Training completed successfully for run: comparative-1-adam-illconditioned-stress-test
 === [TRIAL RUN] PASSED for comparative-1-adam-illconditioned-stress-test at Wed Dec 17 07:27:51 UTC 2025 ===
 
+=== [UV SYNC] Start at Wed Dec 17 07:28:18 UTC 2025 ===
+=== [UV SYNC] Finished successfully at Wed Dec 17 07:28:51 UTC 2025 ===
+=== [TRIAL RUN] Start for comparative-1-adam-mnist-binary-classification at Wed Dec 17 07:28:51 UTC 2025 ===
+
+======================================================================
+SDSLR Experiment Orchestrator
+======================================================================
+Run ID: comparative-1-adam-mnist-binary-classification
+Mode: trial
+Results Directory: .research/results
+======================================================================
+
+Loading run-specific config from: config/runs/comparative-1-adam-mnist-binary-classification.yaml

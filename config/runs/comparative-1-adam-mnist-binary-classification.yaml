@@ -1,4 +1,6 @@
-run_id: comparative-1-adam-mnist-binary-classification
+run:
+  run_id: comparative-1-adam-mnist-binary-classification
+
 method: Standard-Adam
 description: Baseline Adam optimizer on MNIST binary classification (no spectrum awareness)
 

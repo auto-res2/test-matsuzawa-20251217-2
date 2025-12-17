@@ -1,4 +1,6 @@
-run_id: proposed-sdslr-mnist-binary-classification
+run:
+  run_id: proposed-sdslr-mnist-binary-classification
+
 method: Spectrum-Dependent Streaming Adaptive Learning Rate (SDSLR)
 description: Streaming binary classification on MNIST (0 vs 1) with single-pass training
 

@@ -1,4 +1,6 @@
-run_id: proposed-sdslr-federated-learning
+run:
+  run_id: proposed-sdslr-federated-learning
+
 method: Spectrum-Dependent Streaming Adaptive Learning Rate (SDSLR)
 description: Federated learning simulation with 10 clients and single-pass local training
 

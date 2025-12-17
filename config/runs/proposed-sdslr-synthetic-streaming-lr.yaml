@@ -1,4 +1,6 @@
-run_id: proposed-sdslr-synthetic-streaming-lr
+run:
+  run_id: proposed-sdslr-synthetic-streaming-lr
+
 method: Spectrum-Dependent Streaming Adaptive Learning Rate (SDSLR)
 description: Core streaming optimization benchmark with synthetic ill-conditioned linear regression
 
