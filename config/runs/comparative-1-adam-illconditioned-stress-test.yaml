@@ -1,4 +1,5 @@
-run_id: comparative-1-adam-illconditioned-stress-test
+run:
+  run_id: comparative-1-adam-illconditioned-stress-test
 method: Standard-Adam
 description: Baseline Adam optimizer on ill-conditioned least squares stress test (κ=1000)
 
