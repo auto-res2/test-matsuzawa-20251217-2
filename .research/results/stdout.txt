@@ -344,3 +344,59 @@ Training Summary
 Training completed successfully for run: comparative-1-adam-synthetic-streaming-lr
 === [TRIAL RUN] PASSED for comparative-1-adam-synthetic-streaming-lr at Wed Dec 17 07:47:25 UTC 2025 ===
 
+=== [UV SYNC] Start at Wed Dec 17 07:47:58 UTC 2025 ===
+=== [UV SYNC] Finished successfully at Wed Dec 17 07:48:32 UTC 2025 ===
+=== [TRIAL RUN] Start for proposed-sdslr-federated-learning at Wed Dec 17 07:48:32 UTC 2025 ===
+
+======================================================================
+SDSLR Experiment Orchestrator
+======================================================================
+Run ID: proposed-sdslr-federated-learning
+Mode: trial
+Results Directory: .research/results
+======================================================================
+
+Loading run-specific config from: config/runs/proposed-sdslr-federated-learning.yaml
+✓ Run config merged with base config
+
+Launching train.py with command:
+  /home/runner/work/test-matsuzawa-20251217-2/test-matsuzawa-20251217-2/.venv/bin/python3 -u -m src.train run.run_id=proposed-sdslr-federated-learning results_dir=.research/results mode=trial
+
+
+======================================================================
+SDSLR Training Script
+======================================================================
+Run ID: proposed-sdslr-federated-learning
+Mode: trial
+======================================================================
+
+Loading run-specific config from: config/runs/proposed-sdslr-federated-learning.yaml
+✓ Run config merged with base config
+
+TRIAL MODE: WandB disabled, Optuna disabled, epochs=1
+
+Using device: cpu
+✓ Model initialized with 5000 parameters
+Starting training for task: logistic-regression-distributed
+Epochs: 1, Max iterations per epoch: 2
+
+✓ Batch shapes verified: x=torch.Size([1, 5000]), y=torch.Size([1])
+
+Training completed in 0.02 seconds
+
+======================================================================
+Training Summary
+======================================================================
+  final_test_loss: 0.307084
+  final_train_loss: 0.246372
+  learning_rate_variance: 0.185213
+  total_iterations: 2
+  wall_clock_time: 0.019895
+  wall_clock_time_per_iter: 0.009947
+======================================================================
+
+✓ Training completed successfully!
+
+Training completed successfully for run: proposed-sdslr-federated-learning
+=== [TRIAL RUN] PASSED for proposed-sdslr-federated-learning at Wed Dec 17 07:48:39 UTC 2025 ===
+
