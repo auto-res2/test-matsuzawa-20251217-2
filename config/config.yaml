@@ -13,6 +13,10 @@ mode: null
 
 results_dir: ./results
 
+method: null
+
+description: null
+
 # Full schema with defaults for all components
 model:
   name: null
@@ -77,3 +81,9 @@ evaluation:
   confidence_interval: 0.9
   statistical_test: paired-t-test
   significance_level: 0.05
+
+experiment_metadata:
+  experiment_id: null
+  task_type: null
+  runner: null
+  baseline: false
